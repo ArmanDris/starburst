@@ -2,6 +2,7 @@
 # You typically do not need to edit this file
 
 packages = [
+  { name = "argv", version = "1.0.2", build_tools = ["gleam"], requirements = [], otp_app = "argv", source = "hex", outer_checksum = "BA1FF0929525DEBA1CE67256E5ADF77A7CDDFE729E3E3F57A5BDCAA031DED09D" },
   { name = "elli", version = "3.3.0", build_tools = ["rebar3"], requirements = [], otp_app = "elli", source = "hex", outer_checksum = "698B13B33D05661DB9FE7EFCBA41B84825A379CCE86E486CF6AFF9285BE0CCF8" },
   { name = "gleam_elli", version = "2.4.2", build_tools = ["gleam"], requirements = ["elli", "gleam_erlang", "gleam_http", "gleam_otp", "gleam_stdlib"], otp_app = "gleam_elli", source = "hex", outer_checksum = "CBF437B4610D867B56C3D7F8127EFDA36A8465831133C9F432D1EF34E997D0AC" },
   { name = "gleam_erlang", version = "0.34.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "gleam_erlang", source = "hex", outer_checksum = "0C38F2A128BAA0CEF17C3000BD2097EB80634E239CE31A86400C4416A5D0FDCC" },
@@ -13,8 +14,11 @@ packages = [
 ]
 
 [requirements]
+argv = { version = ">= 1.0.2 and < 2.0.0" }
 gleam_elli = { version = ">= 2.4.2 and < 3.0.0" }
+gleam_erlang = { version = ">= 0.34.0 and < 1.0.0" }
 gleam_http = { version = ">= 3.7.2 and < 4.0.0" }
 gleam_httpc = { version = ">= 4.1.0 and < 5.0.0" }
+gleam_otp = { version = ">= 0.16.1 and < 1.0.0" }
 gleam_stdlib = { version = ">= 0.44.0 and < 2.0.0" }
 gleeunit = { version = ">= 1.0.0 and < 2.0.0" }

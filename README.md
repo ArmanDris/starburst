@@ -1,5 +1,9 @@
 # starburst
 
+## Network requests with python
+Sent 1000 requests in 0.53 seconds (1900.92 requests/sec)
+
+# Default information
 [![Package Version](https://img.shields.io/hexpm/v/starburst)](https://hex.pm/packages/starburst)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/starburst/)
 

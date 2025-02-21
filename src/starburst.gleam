@@ -1,37 +1,73 @@
-import gleam/http/request
-import gleam/http/response
-import gleam/httpc
+import argv
+import gleam.{Error}
+import gleam/erlang/process
 import gleam/int
 import gleam/io
-import gleam/result
+import gleam/list
+import gleam/result.{map_error, try}
 import gleam/string
-import gleeunit/should
+import internal/draw_map
+import internal/send_request
 
-fn format_response(resp: response.Response(String)) -> String {
-  string.join([int.to_string(resp.status), resp.body], " ")
+fn get_arg_as_int(args: List(String)) -> Result(Int, String) {
+  use arg <- try(case args {
+    [] -> Ok("5")
+    [a] -> Ok(a)
+    _ -> Error("Usage: starburst <num_requests>")
+  })
+
+  int.parse(arg)
+  |> map_error(fn(_) { "Could not parse " <> arg <> " as an int" })
 }
 
-fn ping_interview_api() {
-  let assert Ok(base_req) = request.to("https://interview-api.skillsync.site")
-
-  let req =
-    request.prepend_header(base_req, "accept", "application/vnd.hmrc.1.0+json")
-
-  use resp <- result.try(httpc.send(req))
-
-  resp.status |> should.equal(404)
-
-  resp
-  |> response.get_header("content-type")
-  |> should.equal(Ok("application/json"))
-
-  resp.body
-  |> should.equal("{\"detail\":\"Not Found\"}")
-
-  io.println(format_response(resp))
-  Ok(resp)
+fn helper_spawn_n_processes(
+  results: List(String),
+  count: Int,
+  num_processes_to_spawn: Int,
+  subject,
+) -> List(String) {
+  case count >= num_processes_to_spawn {
+    True -> {
+      case list.length(results) >= num_processes_to_spawn {
+        True -> results
+        False -> {
+          let msg = process.receive(subject, 1000)
+          let new_item = case msg {
+            Ok(s) -> s
+            Error(_) -> "Did not receive message"
+          }
+          helper_spawn_n_processes(
+            [new_item, ..results],
+            count,
+            num_processes_to_spawn,
+            subject,
+          )
+        }
+      }
+    }
+    False -> {
+      process.start(fn() { send_request.ping_interview_api(subject) }, False)
+      helper_spawn_n_processes(
+        results,
+        count + 1,
+        num_processes_to_spawn,
+        subject,
+      )
+    }
+  }
 }
 
-pub fn main() {
-  ping_interview_api()
+fn spawn_n_processes(n: Int) -> List(String) {
+  helper_spawn_n_processes([], 0, n, process.new_subject())
+}
+
+pub fn main() -> Result(Nil, String) {
+  use num <- try(get_arg_as_int(argv.load().arguments))
+
+  let result = "[" <> string.join(spawn_n_processes(num), " ") <> "]"
+  io.println(result)
+
+  draw_map.draw_ascii_map("drismir.ca")
+
+  Ok(Nil)
 }
