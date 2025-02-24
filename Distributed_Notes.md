@@ -60,3 +60,28 @@ Please check your configuration
 But its ok because it seems you only need the long-name if you want to 
 communicate across domains [(from a thread made in 2008)](https://erlang.org/pipermail/erlang-questions/2008-June/036024.html), which I do
 not need to do. So -sname is good enough :)
+
+Computers running erlang on the same network can communicate by default. 
+In our docker environment we can setup a connected set of nodes!
+
+To do this you need to run these commands on each machine in the network.
+(You will replace node_name with whatever you want to name the node)
+```sh
+$ hostname
+<hostname>
+$ erl -sname <node_name> -setcookie secret
+```
+
+Then to connect the nodes to eachother you will use
+net_adm:ping('<node_name>@<hostname>') from within the erlang shell.
+```erl
+(node@<my_node_hostname>)4>net:adm:ping('local_node@other_machine').
+pong
+```
+
+If the pong was not verification enough, we can check that we are
+connected to other nodes using the nodes() function.
+```erl
+nodes().
+[local_node@other_machine, ...]
+```
