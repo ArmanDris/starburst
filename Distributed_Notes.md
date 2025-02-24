@@ -45,3 +45,18 @@ We can see all the nodes we have a connection with using nodes/0
 (bilbert@Armans-MacBook-Pro.local)2> nodes().
 ['zilbert@Armans-MacBook-Pro.local']
 ```
+
+## Testing in docker
+
+For some reason setting a long-name for a node fails inside
+erlang alpine docker image.
+```sh
+/ # erl -name one
+=INFO REPORT==== 24-Feb-2025::19:18:06.085830 ===
+Can't set long node name!
+Please check your configuration
+... stack trace
+```
+But its ok because it seems you only need the long-name if you want to 
+communicate across domains [(from a thread made in 2008)](https://erlang.org/pipermail/erlang-questions/2008-June/036024.html), which I do
+not need to do. So -sname is good enough :)
